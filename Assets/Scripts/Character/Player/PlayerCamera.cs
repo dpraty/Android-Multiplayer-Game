@@ -1,13 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
-public class WorldSaveGameManager : MonoBehaviour
+public class PlayerCamera : MonoBehaviour
 {
-    public static WorldSaveGameManager instance;
-
-    [SerializeField] int worldSceneIndex = 1;
+    public static PlayerCamera instance;
 
     private void Awake()
     {
@@ -24,12 +21,5 @@ public class WorldSaveGameManager : MonoBehaviour
     private void Start()
     {
         DontDestroyOnLoad(gameObject);
-    }
-
-    public IEnumerator LoadNewGame()
-    {
-        AsyncOperation loadOperation = SceneManager.LoadSceneAsync(worldSceneIndex);
-
-        yield return null;
     }
 }
