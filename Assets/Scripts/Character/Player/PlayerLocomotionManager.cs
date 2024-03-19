@@ -11,11 +11,11 @@ public class PlayerLocomotionManager : CharacterLocomotionManager
     public float moveAmount;
 
     private Vector3 moveDirection;
-    private Vector3 targetRotationDirection;
+    private Vector3 rotationDirection;
 
     [SerializeField] float walkingSpeed = 2;
     [SerializeField] float runningSpeed = 5;
-    [SerializeField] float rotationSpeed = 12;
+    [SerializeField] float rotationSpeed = 1.2f;
 
     protected override void Awake()
     {
@@ -27,7 +27,6 @@ public class PlayerLocomotionManager : CharacterLocomotionManager
     public void HandleAllMovement()
     {
         HandleGroundedMovement();
-        HandleRotation();
     }
 
     private void GetVerticalAndHorizontalInputs()
@@ -40,8 +39,7 @@ public class PlayerLocomotionManager : CharacterLocomotionManager
     {
         GetVerticalAndHorizontalInputs();
         
-        moveDirection = PlayerCamera.instance.transform.forward * verticalMovement;
-        moveDirection += PlayerCamera.instance.transform.right * horizontalMovement;
+        moveDirection = verticalMovement*Vector3.forward + horizontalMovement*Vector3.right;
         moveDirection.Normalize();
         moveDirection.y = 0;
 
@@ -53,22 +51,15 @@ public class PlayerLocomotionManager : CharacterLocomotionManager
         {
             player.characterController.Move(moveDirection * walkingSpeed * Time.deltaTime);
         }
-    }
 
-    private void HandleRotation()
-    {
-        targetRotationDirection = Vector3.zero;
-        targetRotationDirection = PlayerCamera.instance.cameraObject.transform.forward * verticalMovement;
-        targetRotationDirection += PlayerCamera.instance.cameraObject.transform.right * horizontalMovement;
-        targetRotationDirection.Normalize();
-        targetRotationDirection.y = 0;
+        rotationDirection = moveDirection;
 
-        if (targetRotationDirection == Vector3.zero)
+        if (rotationDirection == Vector3.zero)
         {
-            targetRotationDirection = transform.forward;
+            rotationDirection = transform.forward;
         }
 
-        Quaternion newRotation = Quaternion.LookRotation(targetRotationDirection);
+        Quaternion newRotation = Quaternion.LookRotation(rotationDirection);
         Quaternion targetRoation = Quaternion.Slerp(transform.rotation, newRotation, rotationSpeed * Time.deltaTime);
         transform.rotation = targetRoation;
     }

@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 
 public class PlayerCamera : MonoBehaviour
 {
     public static PlayerCamera instance;
 
-    public Camera cameraObject;
+    public CinemachineVirtualCamera vCam;
 
     private void Awake()
     {
@@ -18,10 +19,13 @@ public class PlayerCamera : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        vCam = GetComponent<CinemachineVirtualCamera>();
     }
 
     private void Start()
     {
         DontDestroyOnLoad(gameObject);
     }
+
 }
