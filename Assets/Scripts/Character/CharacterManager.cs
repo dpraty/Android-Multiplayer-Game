@@ -5,9 +5,10 @@ using Unity.Netcode;
 
 public class CharacterManager : NetworkBehaviour
 {
-    CharacterNetworkManager characterNetworkManager;
-
-    public CharacterController characterController;
+    //Base Class for Character
+    [HideInInspector] public CharacterNetworkManager characterNetworkManager;
+    [HideInInspector] public Animator animator;
+    [HideInInspector] public CharacterController characterController;
 
     protected virtual void Awake()
     {
@@ -15,27 +16,38 @@ public class CharacterManager : NetworkBehaviour
 
         characterNetworkManager = GetComponent<CharacterNetworkManager>();
         characterController = GetComponent<CharacterController>();
+        animator = GetComponent<Animator>();
+    }
+
+    protected virtual void Start()
+    {
+
     }
 
     protected virtual void Update()
     {
+        // If character is owner update network position and rotation values
         if (IsOwner)
         {
             characterNetworkManager.networkPosition.Value = transform.position;
             characterNetworkManager.networkRotation.Value = transform.rotation;
         }
+        // If character is not owned by us set position and rotation by reading from network values
         else
         {
-            transform.position = Vector3.SmoothDamp
-                (transform.position, 
-                characterNetworkManager.networkPosition.Value, 
-                ref characterNetworkManager.networkPositionVelocity, 
-                characterNetworkManager.networkPositionSmoothTime);
+            Vector3 targetPosition = Vector3.SmoothDamp
+                (transform.position,
+                 characterNetworkManager.networkPosition.Value,
+                 ref characterNetworkManager.networkPositionVelocity,
+                 characterNetworkManager.networkPositionSmoothTime);
 
-            transform.rotation = Quaternion.Slerp
+            // Vector3 targetPosition = characterNetworkManager.networkPositionVelocity;
+            Quaternion targetRotation = Quaternion.Slerp
                 (transform.rotation,
-                characterNetworkManager.networkRotation.Value,
-                characterNetworkManager.networkRotationSmoothTime);
+                 characterNetworkManager.networkRotation.Value,
+                 characterNetworkManager.networkRotationSmoothTime);
+
+            transform.SetPositionAndRotation(targetPosition, targetRotation);
         }
     }
 }

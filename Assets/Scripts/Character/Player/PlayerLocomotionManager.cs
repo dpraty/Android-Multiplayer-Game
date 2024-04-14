@@ -4,8 +4,11 @@ using UnityEngine;
 
 public class PlayerLocomotionManager : CharacterLocomotionManager
 {
+    // Player Movement Class
+
     PlayerManager player;
 
+    // we keep a copy of inputs from input manager here to easily update animator params
     public float verticalMovement;
     public float horizontalMovement;
     public float moveAmount;
@@ -13,9 +16,9 @@ public class PlayerLocomotionManager : CharacterLocomotionManager
     private Vector3 moveDirection;
     private Vector3 rotationDirection;
 
-    [SerializeField] float walkingSpeed = 2;
-    [SerializeField] float runningSpeed = 5;
-    [SerializeField] float rotationSpeed = 1.2f;
+    [SerializeField] float walkingSpeed = 1.2f;
+    [SerializeField] float runningSpeed = 4.4f;
+    [SerializeField] float rotationSpeed = 1000f;
 
     protected override void Awake()
     {
@@ -24,34 +27,65 @@ public class PlayerLocomotionManager : CharacterLocomotionManager
         player = GetComponent<PlayerManager>();
     }
 
+    // Animator values for both the player and client are set here
+    protected override void Update()
+    {
+        base.Update();
+
+        // player logic
+        if (player.IsOwner)
+        {
+            player.characterNetworkManager.animatorVerticalValue.Value = verticalMovement;
+            player.characterNetworkManager.animatorHorizontalValue.Value = horizontalMovement;
+            player.characterNetworkManager.animatorMoveAmountValue.Value = moveAmount;
+        }
+
+        // client logic
+        else
+        {
+            verticalMovement = player.characterNetworkManager.animatorVerticalValue.Value;
+            horizontalMovement = player.characterNetworkManager.animatorHorizontalValue.Value;
+            moveAmount = player.characterNetworkManager.animatorMoveAmountValue.Value;
+
+            // the update animator params for the client happens here??
+            player.playerAnimatorManager.UpdateAnimatorMovementParameters(0, moveAmount);
+        }
+    }
+
     public void HandleAllMovement()
     {
         HandleGroundedMovement();
     }
 
-    private void GetVerticalAndHorizontalInputs()
+    // read movement inputs from player input manager
+    private void GetMovementInputs()
     {
         verticalMovement = PlayerInputManager.instance.verticalInput;
         horizontalMovement = PlayerInputManager.instance.horizontalInput;
+        moveAmount = PlayerInputManager.instance.moveAmount;
     }
 
+    // handle movement and roation
     public void HandleGroundedMovement()
     {
-        GetVerticalAndHorizontalInputs();
+        // read move input and calucalte move direction
+        GetMovementInputs();
         
         moveDirection = verticalMovement*Vector3.forward + horizontalMovement*Vector3.right;
         moveDirection.Normalize();
         moveDirection.y = 0;
 
+        // clip speed by moveAmount
         if (PlayerInputManager.instance.moveAmount > 0.5f)
         {
-            player.characterController.Move(moveDirection * runningSpeed * Time.deltaTime);
+            player.characterController.Move(runningSpeed * Time.deltaTime * moveDirection);
         }
-        else if (PlayerInputManager.instance.moveAmount <= 0.5f)
+        else if (PlayerInputManager.instance.moveAmount <= 0.5f && PlayerInputManager.instance.moveAmount >= 0.01f)
         {
-            player.characterController.Move(moveDirection * walkingSpeed * Time.deltaTime);
+            player.characterController.Move(Time.deltaTime * walkingSpeed * moveDirection);
         }
 
+        // unlocked rotation logic
         rotationDirection = moveDirection;
 
         if (rotationDirection == Vector3.zero)
@@ -59,8 +93,6 @@ public class PlayerLocomotionManager : CharacterLocomotionManager
             rotationDirection = transform.forward;
         }
 
-        Quaternion newRotation = Quaternion.LookRotation(rotationDirection);
-        Quaternion targetRoation = Quaternion.Slerp(transform.rotation, newRotation, rotationSpeed * Time.deltaTime);
-        transform.rotation = targetRoation;
+        transform.LookAt(transform.position + rotationSpeed * Time.deltaTime * rotationDirection, Vector3.up);
     }
 }

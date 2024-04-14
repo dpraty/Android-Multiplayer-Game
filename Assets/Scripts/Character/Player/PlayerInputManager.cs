@@ -8,14 +8,16 @@ public class PlayerInputManager : MonoBehaviour
     // SINGLETON
     public static PlayerInputManager instance;
 
+    public PlayerManager player;
+
     // Player Actions - Used to subscribe to the input event
     PlayerControls playerControls;
 
     // Input variables
     [SerializeField] Vector2 movementInput;
-    [SerializeField] public float verticalInput;
-    [SerializeField] public float horizontalInput;
-    [SerializeField] public float moveAmount;
+    public float verticalInput;
+    public float horizontalInput;
+    public float moveAmount;
 
     private void Awake()
     {
@@ -29,16 +31,7 @@ public class PlayerInputManager : MonoBehaviour
         }
     }
 
-    private void Start()
-    {
-        // Don't destroy when loading into scenes - why is it in start not awake?
-        DontDestroyOnLoad(gameObject);
-
-        // Assign OnSceneChange to the activeSceneChange list
-        SceneManager.activeSceneChanged += OnSceneChange;
-        instance.enabled = false;
-    }
-
+    // singleton check for PlayerInputManager happens on Enable
     private void OnEnable()
     {
         if (playerControls == null)
@@ -50,6 +43,23 @@ public class PlayerInputManager : MonoBehaviour
         }
 
         playerControls.Enable();
+    }
+
+    private void Start()
+    {
+        // Don't destroy when loading into scenes - why is it in start not awake?
+        DontDestroyOnLoad(gameObject);
+
+        // Assign OnSceneChange to the activeSceneChange list
+        SceneManager.activeSceneChanged += OnSceneChange;
+        // Diable Inputs on Start
+        instance.enabled = false;
+    }
+
+    // collect all inputs on every frame
+    private void Update()
+    {
+        HandleMovementInput();
     }
 
     private void OnDestroy()
@@ -74,11 +84,6 @@ public class PlayerInputManager : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-        HandleMovementInput();
-    }
-
     // if the new scene is the world scene enable the input manager else disable it
     private void OnSceneChange(Scene oldScene, Scene newScene)
     {
@@ -92,6 +97,7 @@ public class PlayerInputManager : MonoBehaviour
         }
     }
 
+    // handles movement Input
     private void HandleMovementInput()
     {
         verticalInput = movementInput.y;
@@ -107,5 +113,10 @@ public class PlayerInputManager : MonoBehaviour
         {
             moveAmount = 1;
         }
+
+        if (player == null)
+            return;
+
+        player.playerAnimatorManager.UpdateAnimatorMovementParameters(0, moveAmount);
     }
 }
