@@ -115,7 +115,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 4133807657
+  GlobalObjectIdHash: 256508207
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -135,7 +135,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df30f1a1a4a39ed4981e7e21d1c7f234, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  characterNetworkManager: {fileID: 0}
+  animator: {fileID: 0}
   characterController: {fileID: 0}
+  playerLocomotionManager: {fileID: 0}
+  playerAnimatorManager: {fileID: 0}
 --- !u!114 &2838612203850660826
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -199,6 +203,12 @@ MonoBehaviour:
   networkPositionVelocity: {x: 0, y: 0, z: 0}
   networkPositionSmoothTime: 0.1
   networkRotationSmoothTime: 0.1
+  animatorHorizontalValue:
+    m_InternalValue: 0
+  animatorVerticalValue:
+    m_InternalValue: 0
+  animatorMoveAmountValue:
+    m_InternalValue: 0
 --- !u!114 &4778601056245271233
 MonoBehaviour:
   m_ObjectHideFlags: 0

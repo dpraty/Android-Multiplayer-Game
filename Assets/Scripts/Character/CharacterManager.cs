@@ -41,7 +41,8 @@ public class CharacterManager : NetworkBehaviour
                  ref characterNetworkManager.networkPositionVelocity,
                  characterNetworkManager.networkPositionSmoothTime);
 
-            // Vector3 targetPosition = characterNetworkManager.networkPositionVelocity;
+            //Vector3 targetPosition = characterNetworkManager.networkPosition.Value;
+
             Quaternion targetRotation = Quaternion.Slerp
                 (transform.rotation,
                  characterNetworkManager.networkRotation.Value,
