@@ -13,11 +13,12 @@ public class PlayerInputManager : MonoBehaviour
     // Player Actions - Used to subscribe to the input event
     PlayerControls playerControls;
 
-    // Input variables
+    [Header("Player Inputs")]
     [SerializeField] Vector2 movementInput;
     public float verticalInput;
     public float horizontalInput;
     public float moveAmount;
+    [SerializeField] bool dodgeInput = false;
 
     private void Awake()
     {
@@ -40,6 +41,7 @@ public class PlayerInputManager : MonoBehaviour
 
             // on enable we assign this weird function which sets movementInput to Movement.performed
             playerControls.PlayerMovement.Movement.performed += i => movementInput = i.ReadValue<Vector2>();
+            playerControls.PlayerActions.Dodge.performed += i => dodgeInput = true;
         }
 
         playerControls.Enable();
@@ -59,7 +61,7 @@ public class PlayerInputManager : MonoBehaviour
     // collect all inputs on every frame
     private void Update()
     {
-        HandleMovementInput();
+        HandleAllInput();
     }
 
     private void OnDestroy()
@@ -97,6 +99,12 @@ public class PlayerInputManager : MonoBehaviour
         }
     }
 
+    private void HandleAllInput()
+    {
+        HandleMovementInput();
+        HandleDodgeInput();
+    }
+
     // handles movement Input
     private void HandleMovementInput()
     {
@@ -118,5 +126,15 @@ public class PlayerInputManager : MonoBehaviour
             return;
 
         player.playerAnimatorManager.UpdateAnimatorMovementParameters(0, moveAmount);
+    }
+
+    private void HandleDodgeInput()
+    {
+        if (dodgeInput)
+        {
+            dodgeInput = false;
+
+            player.playerLocomotionManager.AttemptToPerformDodge();
+        }
     }
 }

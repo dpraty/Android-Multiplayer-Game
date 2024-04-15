@@ -9,16 +9,17 @@ public class PlayerLocomotionManager : CharacterLocomotionManager
     PlayerManager player;
 
     // we keep a copy of inputs from input manager here to easily update animator params
-    public float verticalMovement;
-    public float horizontalMovement;
-    public float moveAmount;
+    [HideInInspector] public float verticalMovement;
+    [HideInInspector] public float horizontalMovement;
+    [HideInInspector] public float moveAmount;
 
+    [Header("Movement Settings")]
     private Vector3 moveDirection;
     private Vector3 rotationDirection;
-
     [SerializeField] float walkingSpeed = 1.2f;
     [SerializeField] float runningSpeed = 4.4f;
     [SerializeField] float rotationSpeed = 1000f;
+    private Vector3 rollDirection;
 
     protected override void Awake()
     {
@@ -55,6 +56,7 @@ public class PlayerLocomotionManager : CharacterLocomotionManager
     public void HandleAllMovement()
     {
         HandleGroundedMovement();
+        HandleRotation();
     }
 
     // read movement inputs from player input manager
@@ -75,24 +77,54 @@ public class PlayerLocomotionManager : CharacterLocomotionManager
         moveDirection.Normalize();
         moveDirection.y = 0;
 
+        if (!player.canMove)
+            return;
         // clip speed by moveAmount
-        if (PlayerInputManager.instance.moveAmount > 0.5f)
+        if (moveAmount > 0.5f)
         {
             player.characterController.Move(runningSpeed * Time.deltaTime * moveDirection);
         }
-        else if (PlayerInputManager.instance.moveAmount <= 0.5f && PlayerInputManager.instance.moveAmount >= 0.01f)
+        else if (moveAmount <= 0.5f && moveAmount >= 0.01f)
         {
             player.characterController.Move(Time.deltaTime * walkingSpeed * moveDirection);
         }
+    }
+
+    private void HandleRotation()
+    {
+        if (!player.canRotate)
+            return;
 
         // unlocked rotation logic
         rotationDirection = moveDirection;
 
         if (rotationDirection == Vector3.zero)
         {
-            rotationDirection = transform.forward;
+            rotationDirection = player.transform.forward;
         }
 
-        transform.LookAt(transform.position + rotationSpeed * Time.deltaTime * rotationDirection, Vector3.up);
+        player.transform.LookAt(player.transform.position + rotationSpeed * Time.deltaTime * rotationDirection, Vector3.up);
+    }
+
+    public void AttemptToPerformDodge()
+    {
+        if (player.isPerformingAction)
+            return;
+
+        if (moveAmount > 0)
+        {
+            rollDirection = verticalMovement * Vector3.forward + horizontalMovement * Vector3.right;
+            rollDirection.Normalize();
+            rollDirection.y = 0;
+
+            Quaternion playerRotation = Quaternion.LookRotation(rollDirection);
+            player.transform.rotation = playerRotation;
+
+            player.playerAnimatorManager.PlayTargetActionAnimation("Roll_Forward", true, true);
+        }
+        else
+        {
+            player.playerAnimatorManager.PlayTargetActionAnimation("Backstep", true, true);
+        }
     }
 }
