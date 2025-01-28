@@ -19,7 +19,10 @@ public class PlayerLocomotionManager : CharacterLocomotionManager
     [SerializeField] float walkingSpeed = 1.2f;
     [SerializeField] float runningSpeed = 4.4f;
     [SerializeField] float rotationSpeed = 1000f;
+
+    [Header("Dodge")]
     private Vector3 rollDirection;
+    [SerializeField] float dodgeStaminaCost = 20;
 
     protected override void Awake()
     {
@@ -74,9 +77,9 @@ public class PlayerLocomotionManager : CharacterLocomotionManager
         GetMovementInputs();
         
         moveDirection = verticalMovement*Vector3.forward + horizontalMovement*Vector3.right;
-        moveDirection.Normalize();
         moveDirection.y = 0;
-
+        moveDirection.Normalize();
+        
         if (!player.canMove)
             return;
         // clip speed by moveAmount
@@ -111,6 +114,9 @@ public class PlayerLocomotionManager : CharacterLocomotionManager
         if (player.isPerformingAction)
             return;
 
+        if (player.playerNetworkManager.currentStamina.Value <= 0)
+            return;
+
         if (moveAmount > 0)
         {
             rollDirection = verticalMovement * Vector3.forward + horizontalMovement * Vector3.right;
@@ -126,5 +132,7 @@ public class PlayerLocomotionManager : CharacterLocomotionManager
         {
             player.playerAnimatorManager.PlayTargetActionAnimation("Backstep", true, true);
         }
+
+        player.playerNetworkManager.currentStamina.Value -= dodgeStaminaCost;
     }
 }

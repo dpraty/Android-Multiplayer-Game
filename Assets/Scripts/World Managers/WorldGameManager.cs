@@ -10,6 +10,7 @@ public class WorldGameManager : MonoBehaviour
 
     public static WorldGameManager instance;
     public TestRelay relay;
+    public TitleScreenManager titleScreenManager;
 
     // Scene List - currently only has the world scene
     [Header("Scene Index")]
@@ -26,18 +27,14 @@ public class WorldGameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
     }
 
     private void Start()
     {
         DontDestroyOnLoad(gameObject);
     }
-
-    private void Update()
-    {
-
-    }
-
+   
     // start host network
 
     // an Async/Corutine thing to load scenes??
@@ -47,17 +44,15 @@ public class WorldGameManager : MonoBehaviour
 
         yield return null;
     }
-    
-    // this function starts the new game called when we press the start game button
-    // it starts the host network and loads the game scene
-    public void StartNewGame()
+
+    public void StartGame()
     {
         NetworkManager.Singleton.StartHost();
         StartCoroutine(WorldGameManager.instance.LoadWorldScene());
     }
 
     // to start game as client first shutdown the host network then start a client
-    public void StartGameAsClient(string joinCode)
+    public void JoinGameAsClient(string joinCode)
     {
         relay.JoinRelay(joinCode);
         StartCoroutine(WorldGameManager.instance.LoadWorldScene());

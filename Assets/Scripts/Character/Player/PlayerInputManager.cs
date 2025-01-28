@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem.EnhancedTouch;
+using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 
 public class PlayerInputManager : MonoBehaviour
 {
@@ -10,15 +12,18 @@ public class PlayerInputManager : MonoBehaviour
 
     public PlayerManager player;
 
-    // Player Actions - Used to subscribe to the input event
-    PlayerControls playerControls;
-
     [Header("Player Inputs")]
     [SerializeField] Vector2 movementInput;
     public float verticalInput;
     public float horizontalInput;
     public float moveAmount;
     [SerializeField] bool dodgeInput = false;
+
+    [Header("Touchscreen Controls")]
+    public TouchJoystick movementJoystick;
+    public TouchButton dodgeButton;
+
+    private Finger movementFinger;
 
     private void Awake()
     {
@@ -31,20 +36,41 @@ public class PlayerInputManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
-
-    // singleton check for PlayerInputManager happens on Enable
+    
     private void OnEnable()
     {
-        if (playerControls == null)
+        UnityEngine.InputSystem.EnhancedTouch.EnhancedTouchSupport.Enable();
+        UnityEngine.InputSystem.EnhancedTouch.TouchSimulation.Enable();
+        Touch.onFingerDown += HandleFingerDown;
+        Touch.onFingerMove += HandleFingerMove;
+        Touch.onFingerUp += HandleFingerUp;
+    }
+
+    private void OnDisable()
+    {
+        Touch.onFingerDown -= HandleFingerDown;
+        Touch.onFingerMove -= HandleFingerMove;
+        Touch.onFingerUp -= HandleFingerUp;
+        UnityEngine.InputSystem.EnhancedTouch.TouchSimulation.Disable();
+        UnityEngine.InputSystem.EnhancedTouch.EnhancedTouchSupport.Disable();
+    }
+    private void OnDestroy()
+    {
+        SceneManager.activeSceneChanged -= OnSceneChange;
+    }
+
+    private void OnSceneChange(Scene oldScene, Scene newScene)
+    {
+        if (newScene.buildIndex == WorldGameManager.instance.GetWorldSceneIndex())
         {
-            playerControls = new PlayerControls();
-
-            // on enable we assign this weird function which sets movementInput to Movement.performed
-            playerControls.PlayerMovement.Movement.performed += i => movementInput = i.ReadValue<Vector2>();
-            playerControls.PlayerActions.Dodge.performed += i => dodgeInput = true;
+            instance.enabled = true;
+            gameObject.SetActive(true);
         }
-
-        playerControls.Enable();
+        else
+        {
+            gameObject.SetActive(false);
+            instance.enabled = false;
+        }
     }
 
     private void Start()
@@ -52,51 +78,16 @@ public class PlayerInputManager : MonoBehaviour
         // Don't destroy when loading into scenes - why is it in start not awake?
         DontDestroyOnLoad(gameObject);
 
-        // Assign OnSceneChange to the activeSceneChange list
         SceneManager.activeSceneChanged += OnSceneChange;
-        // Diable Inputs on Start
+        gameObject.SetActive(false);
         instance.enabled = false;
+
     }
 
     // collect all inputs on every frame
     private void Update()
     {
         HandleAllInput();
-    }
-
-    private void OnDestroy()
-    {
-        // remove OnSceneChange from activeSceneChanged if this playerInputManager object is destroyed, memory reasons and good practice
-        SceneManager.activeSceneChanged -= OnSceneChange;
-    }
-
-    // makes it so that the active window in parrel sync recieves input
-    private void OnApplicationFocus(bool focus)
-    {
-        if (enabled)
-        {
-            if (focus)
-            {
-                playerControls.Enable();
-            }
-            else
-            {
-                playerControls.Disable();
-            }
-        }
-    }
-
-    // if the new scene is the world scene enable the input manager else disable it
-    private void OnSceneChange(Scene oldScene, Scene newScene)
-    {
-        if (newScene.buildIndex == WorldGameManager.instance.GetWorldSceneIndex())
-        {
-            instance.enabled = true;
-        }
-        else
-        {
-            instance.enabled = false;
-        }
     }
 
     private void HandleAllInput()
@@ -108,6 +99,7 @@ public class PlayerInputManager : MonoBehaviour
     // handles movement Input
     private void HandleMovementInput()
     {
+        
         verticalInput = movementInput.y;
         horizontalInput = movementInput.x;
 
@@ -137,4 +129,53 @@ public class PlayerInputManager : MonoBehaviour
             player.playerLocomotionManager.AttemptToPerformDodge();
         }
     }
+
+    private void HandleFingerDown(Finger touchedFinger)
+    {
+        if (movementFinger == null && Vector2.Distance(touchedFinger.screenPosition, movementJoystick.joystickCenterScreenPosition) <= movementJoystick.joystickScreenRadius)
+        {
+            movementFinger = touchedFinger;
+            movementJoystick.knob.anchoredPosition = touchedFinger.screenPosition - movementJoystick.joystickCenterScreenPosition;
+            movementInput = movementJoystick.knob.anchoredPosition/movementJoystick.joystickScreenRadius;
+        }
+
+       if (Vector2.Distance(touchedFinger.screenPosition, dodgeButton.buttonScreenPosition) <= dodgeButton.buttonRadius && !dodgeButton.buttonPressed)
+        {
+            dodgeInput = true;
+            dodgeButton.PressButton();
+        }
+    }
+
+    private void HandleFingerMove(Finger movedFinger)
+    {
+        if (movedFinger == movementFinger)
+        {
+
+            Touch currentTouch = movedFinger.currentTouch;
+            Vector2 targetKnobPosition = movementFinger.screenPosition - movementJoystick.joystickCenterScreenPosition;
+
+            if (targetKnobPosition.magnitude > movementJoystick.joystickScreenRadius)
+            {
+                movementJoystick.knob.anchoredPosition = targetKnobPosition.normalized * movementJoystick.joystickScreenRadius;
+            }
+            else
+            {
+                movementJoystick.knob.anchoredPosition = targetKnobPosition;
+            }
+
+            movementInput = movementJoystick.knob.anchoredPosition / movementJoystick.joystickScreenRadius;
+        }
+
+    }
+
+    private void HandleFingerUp(Finger lostFinger)
+    {
+        if (lostFinger == movementFinger)
+        {
+            movementFinger = null;
+            movementJoystick.knob.anchoredPosition = Vector2.zero;
+            movementInput = movementJoystick.knob.anchoredPosition / movementJoystick.joystickScreenRadius;
+        }
+    }
+
 }

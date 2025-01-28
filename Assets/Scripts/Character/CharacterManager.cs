@@ -5,11 +5,16 @@ using Unity.Netcode;
 
 public class CharacterManager : NetworkBehaviour
 {
+    [Header("Status")]
+    public NetworkVariable<bool> isDead = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+
     //Base Class for Character
     [HideInInspector] public CharacterNetworkManager characterNetworkManager;
+    [HideInInspector] public CharacterEffectsManager characterEffectsManager;
     [HideInInspector] public Animator animator;
     [HideInInspector] public CharacterController characterController;
 
+    [Header("Flags")]
     public bool isPerformingAction = false;
     public bool canRotate = true;
     public bool canMove = true;
@@ -19,6 +24,7 @@ public class CharacterManager : NetworkBehaviour
         DontDestroyOnLoad(this);
 
         characterNetworkManager = GetComponent<CharacterNetworkManager>();
+        characterEffectsManager = GetComponent<CharacterEffectsManager>();
         characterController = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
     }
@@ -55,4 +61,6 @@ public class CharacterManager : NetworkBehaviour
             transform.SetPositionAndRotation(targetPosition, targetRotation);
         }
     }
+
+
 }
