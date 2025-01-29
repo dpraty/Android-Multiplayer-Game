@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class PlayerEffectsManager : CharacterEffectsManager
 {
+    // Temporary Set-up to test Instant Effects
     [Header("Debug Delete Later")]
     [SerializeField] InstantCharacterEffect effectToTest;
     [SerializeField] bool processEffect = false;
+
 
     private void Update()
     {

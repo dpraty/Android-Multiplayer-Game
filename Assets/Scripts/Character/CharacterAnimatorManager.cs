@@ -25,6 +25,7 @@ public class CharacterAnimatorManager : MonoBehaviour
         character.animator.SetFloat("Vertical", verticalValue, 0.1f, Time.deltaTime);
     }
 
+    // function to play a target animation
     public virtual void PlayTargetActionAnimation(string targetAnimation, bool isPerformingAction, bool applyRootMotion = true, bool canRotate = false, bool canMove = false)
     {
         character.animator.applyRootMotion = applyRootMotion;

@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class WorldGameManager : MonoBehaviour
 {
-    // base world game manager class - singleton
+    // World Game Manager class - singleton
 
     public static WorldGameManager instance;
     public TestRelay relay;
@@ -34,10 +34,8 @@ public class WorldGameManager : MonoBehaviour
     {
         DontDestroyOnLoad(gameObject);
     }
-   
-    // start host network
 
-    // an Async/Corutine thing to load scenes??
+    // Coroutine to Load the world scene
     public IEnumerator LoadWorldScene()
     {
         AsyncOperation loadOperation = SceneManager.LoadSceneAsync(worldSceneIndex);
@@ -45,21 +43,21 @@ public class WorldGameManager : MonoBehaviour
         yield return null;
     }
 
+    // Start the host and load scene, called from Start Game button
     public void StartGame()
     {
         NetworkManager.Singleton.StartHost();
         StartCoroutine(WorldGameManager.instance.LoadWorldScene());
     }
 
-    // to start game as client first shutdown the host network then start a client
+    // Start game as client and load scene, called from join code text input field using On End Edit 
     public void JoinGameAsClient(string joinCode)
     {
         relay.JoinRelay(joinCode);
         StartCoroutine(WorldGameManager.instance.LoadWorldScene());
     }
 
-    // this get world scene index function is for utility - currently used for a clever UI switiching logic
-    // to turn off the title screen
+    // returns the world scene index
     public int GetWorldSceneIndex()
     {
         return worldSceneIndex;

@@ -16,8 +16,7 @@ public class PlayerLocomotionManager : CharacterLocomotionManager
     [Header("Movement Settings")]
     private Vector3 moveDirection;
     private Vector3 rotationDirection;
-    [SerializeField] float walkingSpeed = 1.2f;
-    [SerializeField] float runningSpeed = 4.4f;
+    [SerializeField] float moveSpeed = 4.4f;
     [SerializeField] float rotationSpeed = 1000f;
 
     [Header("Dodge")]
@@ -82,15 +81,8 @@ public class PlayerLocomotionManager : CharacterLocomotionManager
         
         if (!player.canMove)
             return;
-        // clip speed by moveAmount
-        if (moveAmount > 0.5f)
-        {
-            player.characterController.Move(runningSpeed * Time.deltaTime * moveDirection);
-        }
-        else if (moveAmount <= 0.5f && moveAmount >= 0.01f)
-        {
-            player.characterController.Move(Time.deltaTime * walkingSpeed * moveDirection);
-        }
+
+            player.characterController.Move(moveSpeed * Time.deltaTime * moveDirection);    
     }
 
     private void HandleRotation()
@@ -98,7 +90,7 @@ public class PlayerLocomotionManager : CharacterLocomotionManager
         if (!player.canRotate)
             return;
 
-        // unlocked rotation logic
+        // unlocked rotation logic - this will be different when we lock on to an enemy
         rotationDirection = moveDirection;
 
         if (rotationDirection == Vector3.zero)
@@ -117,6 +109,7 @@ public class PlayerLocomotionManager : CharacterLocomotionManager
         if (player.playerNetworkManager.currentStamina.Value <= 0)
             return;
 
+        // if the player is moving, perform a roll in the direction of movement
         if (moveAmount > 0)
         {
             rollDirection = verticalMovement * Vector3.forward + horizontalMovement * Vector3.right;
@@ -128,6 +121,7 @@ public class PlayerLocomotionManager : CharacterLocomotionManager
 
             player.playerAnimatorManager.PlayTargetActionAnimation("Roll_Forward", true, true);
         }
+        // else we back step
         else
         {
             player.playerAnimatorManager.PlayTargetActionAnimation("Backstep", true, true);

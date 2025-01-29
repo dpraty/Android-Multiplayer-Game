@@ -11,8 +11,10 @@ public class CharacterManager : NetworkBehaviour
     //Base Class for Character
     [HideInInspector] public CharacterNetworkManager characterNetworkManager;
     [HideInInspector] public CharacterEffectsManager characterEffectsManager;
-    [HideInInspector] public Animator animator;
+    
     [HideInInspector] public CharacterController characterController;
+    [HideInInspector] public Animator animator;
+    [HideInInspector] public CharacterAnimatorManager characterAnimatorManager;
 
     [Header("Flags")]
     public bool isPerformingAction = false;
@@ -27,6 +29,7 @@ public class CharacterManager : NetworkBehaviour
         characterEffectsManager = GetComponent<CharacterEffectsManager>();
         characterController = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
+        characterAnimatorManager = GetComponent<CharacterAnimatorManager>();
     }
 
     protected virtual void Start()
@@ -62,5 +65,21 @@ public class CharacterManager : NetworkBehaviour
         }
     }
 
+    public virtual IEnumerator ProcessDeathEvent()
+    {
+        if (IsOwner)
+        {
+            characterNetworkManager.currentHealth.Value = 0;
+            isDead.Value = true;
 
+            characterAnimatorManager.PlayTargetActionAnimation("Death", true);
+
+            yield return new WaitForSeconds(5);
+        }
+    }
+
+    public virtual void ReviveCharacter()
+    {
+
+    }
 }

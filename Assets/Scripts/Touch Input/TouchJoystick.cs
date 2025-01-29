@@ -21,6 +21,7 @@ public class TouchJoystick : MonoBehaviour
         CalculateJoystickValues();
     }
 
+    // Calculate world coordinates for the joystick
     private void CalculateJoystickValues()
     {
         

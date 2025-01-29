@@ -7,7 +7,7 @@ using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 
 public class PlayerInputManager : MonoBehaviour
 {
-    // SINGLETON
+    // Player Input Manager Class Singleton
     public static PlayerInputManager instance;
 
     public PlayerManager player;
@@ -23,6 +23,7 @@ public class PlayerInputManager : MonoBehaviour
     public TouchJoystick movementJoystick;
     public TouchButton dodgeButton;
 
+    // Finger variable to track joystick input
     private Finger movementFinger;
 
     private void Awake()
@@ -37,6 +38,7 @@ public class PlayerInputManager : MonoBehaviour
         }
     }
     
+    // Subscribe and un-subscribe to Finger Down, Finger Move and Finger Up events on Enable and Disable
     private void OnEnable()
     {
         UnityEngine.InputSystem.EnhancedTouch.EnhancedTouchSupport.Enable();
@@ -54,11 +56,13 @@ public class PlayerInputManager : MonoBehaviour
         UnityEngine.InputSystem.EnhancedTouch.TouchSimulation.Disable();
         UnityEngine.InputSystem.EnhancedTouch.EnhancedTouchSupport.Disable();
     }
+
     private void OnDestroy()
     {
         SceneManager.activeSceneChanged -= OnSceneChange;
     }
 
+    // Activate Touch Controls when we load into the world scene, de-activate it when loading out of world scene
     private void OnSceneChange(Scene oldScene, Scene newScene)
     {
         if (newScene.buildIndex == WorldGameManager.instance.GetWorldSceneIndex())
@@ -78,6 +82,7 @@ public class PlayerInputManager : MonoBehaviour
         // Don't destroy when loading into scenes - why is it in start not awake?
         DontDestroyOnLoad(gameObject);
 
+        // Subscribe to On Scene Change and then disable the insance and deactivate the Game Object
         SceneManager.activeSceneChanged += OnSceneChange;
         gameObject.SetActive(false);
         instance.enabled = false;
@@ -105,14 +110,8 @@ public class PlayerInputManager : MonoBehaviour
 
         moveAmount = Mathf.Clamp01(Mathf.Abs(verticalInput) + Mathf.Abs(horizontalInput));
 
-        if (moveAmount <= 0.5 && moveAmount > 0)
-        {
-            moveAmount = 0.5f;
-        }
-        else if (moveAmount > 0.5 && moveAmount <= 1)
-        {
+        if (moveAmount != 0)
             moveAmount = 1;
-        }
 
         if (player == null)
             return;
@@ -130,16 +129,21 @@ public class PlayerInputManager : MonoBehaviour
         }
     }
 
+    // Handle Touch Inputs
     private void HandleFingerDown(Finger touchedFinger)
     {
+        // Calculate joystick input based on the position of the touched finger
         if (movementFinger == null && Vector2.Distance(touchedFinger.screenPosition, movementJoystick.joystickCenterScreenPosition) <= movementJoystick.joystickScreenRadius)
         {
+            // set up the movement finger when the joystick is touched
             movementFinger = touchedFinger;
+
             movementJoystick.knob.anchoredPosition = touchedFinger.screenPosition - movementJoystick.joystickCenterScreenPosition;
             movementInput = movementJoystick.knob.anchoredPosition/movementJoystick.joystickScreenRadius;
         }
 
-       if (Vector2.Distance(touchedFinger.screenPosition, dodgeButton.buttonScreenPosition) <= dodgeButton.buttonRadius && !dodgeButton.buttonPressed)
+        // Presses the button based on the position of the touched finger
+        if (Vector2.Distance(touchedFinger.screenPosition, dodgeButton.buttonScreenPosition) <= dodgeButton.buttonRadius && !dodgeButton.buttonPressed)
         {
             dodgeInput = true;
             dodgeButton.PressButton();
@@ -148,6 +152,7 @@ public class PlayerInputManager : MonoBehaviour
 
     private void HandleFingerMove(Finger movedFinger)
     {
+        // calculate the joystick input using the movement finger
         if (movedFinger == movementFinger)
         {
 

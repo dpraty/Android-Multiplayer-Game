@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class InstantCharacterEffect : ScriptableObject
 {
+    // Base Scriptable Object for Instant Effects
+
     [Header("Effect ID")]
     public int instantEffectID;
 

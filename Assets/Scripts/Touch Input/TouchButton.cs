@@ -24,6 +24,7 @@ public class TouchButton : MonoBehaviour
     }
     private void Update()
     {
+        // Once pressed the button cannot be pressed again till phase >= 1
         if (buttonPressed)
         {
             buttonPhase = Mathf.Lerp(0.8f, 1, (Time.time - buttonPressStart) / 0.1f);
@@ -32,6 +33,8 @@ public class TouchButton : MonoBehaviour
             if (buttonPhase >= 1) buttonPressed = false;
         }
     }
+
+    // Calculate world coordinates for the button
     private void CalculateButtonValues()
     {
         Vector3[] v = new Vector3[4];
@@ -44,6 +47,7 @@ public class TouchButton : MonoBehaviour
 
     }
 
+    // Function called when the button is pressed
     public void PressButton()
     {
         buttonPressed=true;
