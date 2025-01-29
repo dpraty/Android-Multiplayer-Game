@@ -48,7 +48,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   relay: {fileID: 0}
-  titleScreenManager: {fileID: 0}
   worldSceneIndex: 1
 --- !u!114 &4297608094463222888
 MonoBehaviour:
@@ -77,7 +76,7 @@ MonoBehaviour:
   NetworkConfig:
     ProtocolVersion: 0
     NetworkTransport: {fileID: 3899718486646988767}
-    PlayerPrefab: {fileID: 1129167620736187027, guid: 3a821b9fcca09474cbb0cbc0ad325e28,
+    PlayerPrefab: {fileID: 129741955043868836, guid: 2c45827ada64edc4f9006c47fc348ace,
       type: 3}
     Prefabs:
       NetworkPrefabsLists:
