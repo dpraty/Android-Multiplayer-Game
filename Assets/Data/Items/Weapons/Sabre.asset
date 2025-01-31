@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 091dd3f2849ed004998e0109e8b2ea47, type: 3}
-  m_Name: Sword
+  m_Name: Sabre
   m_EditorClassIdentifier: 
-  itemName: Straight Sword
-  itemIcon: {fileID: 21300000, guid: dfd9ad57a1cd8bf4fbcd6d1b60edb5e9, type: 3}
+  itemName: 
+  itemIcon: {fileID: 0}
   itemDescription: 
   itemID: 0
-  weaponModel: {fileID: 1246196809530814170, guid: ff87a76e08a6a6c43926e7909283efe7,
+  weaponModel: {fileID: 9184432187975424422, guid: 7073fda23e58a0246ab4051627149026,
     type: 3}
   physicalDamage: 0
   poiseDamage: 10

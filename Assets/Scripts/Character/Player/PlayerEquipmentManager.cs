@@ -6,14 +6,14 @@ public class PlayerEquipmentManager : CharacterEquipmentManager
 {
     PlayerManager player;
 
-    public WeaponModelInstantiationSlot rightHandSlot;
-    public WeaponModelInstantiationSlot leftHandSlot;
+    public WeaponModelInstantiationSlot meleeWeaponSlot;
+    public WeaponModelInstantiationSlot rangedWeaponSlot;
 
-    [SerializeField] WeaponManager rightWeaponManager;
-    [SerializeField] WeaponManager leftWeaponManager;
+    [SerializeField] MeleeWeaponManager meleeWeaponManager;
+    [SerializeField] RangedWeaponManager rangedWeaponManager;
 
-    public GameObject rightHandWeaponModel;
-    public GameObject leftHandWeaponModel;
+    public GameObject meleeWeaponModel;
+    public GameObject rangedWeaponModel;
 
     protected override void Awake()
     {
@@ -37,65 +37,93 @@ public class PlayerEquipmentManager : CharacterEquipmentManager
 
         foreach (var weaponSlot in weaponSlots)
         {
-            if (weaponSlot.weaponSlot == WeaponModelSlot.RightHand)
+            if (weaponSlot.weaponSlot == WeaponModelSlot.MeleeWeapon)
             {
-                rightHandSlot = weaponSlot;
+                meleeWeaponSlot = weaponSlot;
             }
-            else if (weaponSlot.weaponSlot == WeaponModelSlot.LeftHand)
+            else if (weaponSlot.weaponSlot == WeaponModelSlot.RangedWeapon)
             {
-                leftHandSlot = weaponSlot;
+                rangedWeaponSlot = weaponSlot;
             }
         }
     }
 
     public void LoadWeaponsOnBothHands()
     {
-        LoadRightWeapon();
-        LoadLeftWeapon();
+        LoadMeleeWeapon();
+        LoadRangedWeapon();
     }
 
     // Right Weapon
 
-    public void LoadRightWeapon()
+    public void LoadMeleeWeapon()
     {
-        if (player.playerInventoryManager.currentRightHandWeapon != null)
+        if (player.playerInventoryManager.currentMeleeWeapon != null)
         {
-            rightHandSlot.UnloadWeapon();
+            meleeWeaponSlot.UnloadWeapon();
 
-            rightHandWeaponModel = Instantiate(player.playerInventoryManager.currentRightHandWeapon.weaponModel);
-            rightHandSlot.LoadWeapon(rightHandWeaponModel);
-            rightWeaponManager = rightHandWeaponModel.GetComponent<WeaponManager>();
-            rightWeaponManager.SetWeaponDamage(player, player.playerInventoryManager.currentRightHandWeapon);
+            meleeWeaponModel = Instantiate(player.playerInventoryManager.currentMeleeWeapon.weaponModel);
+            meleeWeaponSlot.LoadWeapon(meleeWeaponModel);
+            meleeWeaponManager = meleeWeaponModel.GetComponent<MeleeWeaponManager>();
+            meleeWeaponManager.SetWeaponDamage(player, player.playerInventoryManager.currentMeleeWeapon);
 
         }
     }
 
-    public void SwitchRightWeapon()
+    public void SwitchMeleeWeapon()
     {
         if (!player.IsOwner)
             return;
 
-        player.playerAnimatorManager.PlayTargetActionAnimation("Swap_Right_Weapon", false);
+        player.playerAnimatorManager.PlayTargetActionAnimation("Equip_Melee_Weapon", false, true, true, true);
+
+        WeaponItem selectedWeapon = null;
+
+        player.playerInventoryManager.meleeWeaponIndex += 1;
+
+        if (player.playerInventoryManager.meleeWeaponIndex <0 || player.playerInventoryManager.meleeWeaponIndex > 2)
+        {
+            player.playerInventoryManager.meleeWeaponIndex = 0;
+        }
+
+        selectedWeapon = player.playerInventoryManager.meleeWeaponsInSlots[player.playerInventoryManager.meleeWeaponIndex];
+        player.playerNetworkManager.currentMeleeWeaponID.Value = selectedWeapon.itemID;
+
     }
 
     // Left Weapon
 
-    public void LoadLeftWeapon()
+    public void LoadRangedWeapon()
     {
-        if (player.playerInventoryManager.currentLeftHandWeapon != null)
+        if (player.playerInventoryManager.currentRangedWeapon != null)
         {
-            leftHandSlot.UnloadWeapon();
+            rangedWeaponSlot.UnloadWeapon();
 
-            leftHandWeaponModel = Instantiate(player.playerInventoryManager.currentLeftHandWeapon.weaponModel);
-            leftHandSlot.LoadWeapon(leftHandWeaponModel);
-            leftWeaponManager = leftHandWeaponModel.GetComponent<WeaponManager>();
-            leftWeaponManager.SetWeaponDamage(player, player.playerInventoryManager.currentLeftHandWeapon);
+            rangedWeaponModel = Instantiate(player.playerInventoryManager.currentRangedWeapon.weaponModel);
+            rangedWeaponSlot.LoadWeapon(rangedWeaponModel);
+            rangedWeaponManager = rangedWeaponModel.GetComponent<RangedWeaponManager>();
+            //rangedWeaponManager.SetWeaponDamage(player, player.playerInventoryManager.currentRangedWeapon);
         }
         
     }
 
-    public void SwitchLeftWeapon()
+    public void SwitchRangedWeapon()
     {
+        if (!player.IsOwner)
+            return;
 
+        player.playerAnimatorManager.PlayTargetActionAnimation("Equip_Ranged_Weapon", false, true, true, true);
+
+        WeaponItem selectedWeapon = null;
+
+        player.playerInventoryManager.rangedWeaponIndex += 1;
+
+        if (player.playerInventoryManager.rangedWeaponIndex < 0 || player.playerInventoryManager.rangedWeaponIndex > 2)
+        {
+            player.playerInventoryManager.rangedWeaponIndex = 0;
+        }
+
+        selectedWeapon = player.playerInventoryManager.rangedWeaponsInSlots[player.playerInventoryManager.rangedWeaponIndex];
+        player.playerNetworkManager.currentRangedWeaponID.Value = selectedWeapon.itemID;
     }
 }

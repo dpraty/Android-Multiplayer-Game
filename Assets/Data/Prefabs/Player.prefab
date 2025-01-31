@@ -77,7 +77,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 592952443
+  GlobalObjectIdHash: 736946810
   InScenePlacedSourceGlobalObjectIdHash: 736946810
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -109,11 +109,13 @@ MonoBehaviour:
   canRotate: 1
   canMove: 1
   respawnCharacter: 0
+  switchMeleeWeapon: 0
   playerLocomotionManager: {fileID: 0}
   playerAnimatorManager: {fileID: 0}
   playerNetworkManager: {fileID: 0}
   playerStatsManager: {fileID: 0}
   playerInventoryManager: {fileID: 0}
+  playerEquipmentManager: {fileID: 0}
 --- !u!114 &5286880877628812544
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -151,6 +153,10 @@ MonoBehaviour:
     m_InternalValue: 20
   vitality:
     m_InternalValue: 20
+  currentMeleeWeaponID:
+    m_InternalValue: 0
+  currentRangedWeaponID:
+    m_InternalValue: 0
 --- !u!114 &7759871491185955177
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -177,10 +183,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65b9b58a4db549249950ad23bdaf8b66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentRightHandWeapon: {fileID: 11400000, guid: 5e4cc24343dd7d9449a21236537cf2da,
+  currentMeleeWeapon: {fileID: 11400000, guid: 5e4cc24343dd7d9449a21236537cf2da, type: 2}
+  currentRangedWeapon: {fileID: 11400000, guid: 6a237867800cdd040bdd61a72435ef91,
     type: 2}
-  currentLeftHandWeapon: {fileID: 11400000, guid: 5e4cc24343dd7d9449a21236537cf2da,
-    type: 2}
+  meleeWeaponsInSlots:
+  - {fileID: 11400000, guid: 5e4cc24343dd7d9449a21236537cf2da, type: 2}
+  - {fileID: 11400000, guid: 69827319298dc4a439130c57e4e577fb, type: 2}
+  - {fileID: 11400000, guid: ea3e44de2bfc1564e8ca18eec19f5430, type: 2}
+  meleeWeaponIndex: 0
+  rangedWeaponsInSlots:
+  - {fileID: 11400000, guid: 6a237867800cdd040bdd61a72435ef91, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  rangedWeaponIndex: 0
 --- !u!114 &5741118097415147400
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -193,10 +208,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc5d769865e253f4481f609a8612dfad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rightHandSlot: {fileID: 0}
-  leftHandSlot: {fileID: 0}
-  rightHandWeaponModel: {fileID: 0}
-  leftHandWeaponModel: {fileID: 0}
+  meleeWeaponSlot: {fileID: 0}
+  rangedWeaponSlot: {fileID: 0}
+  meleeWeaponManager: {fileID: 0}
+  rangedWeaponManager: {fileID: 0}
+  meleeWeaponModel: {fileID: 0}
+  rangedWeaponModel: {fileID: 0}
 --- !u!114 &5260572117432802485
 MonoBehaviour:
   m_ObjectHideFlags: 0

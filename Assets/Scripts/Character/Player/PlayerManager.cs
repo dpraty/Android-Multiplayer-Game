@@ -9,12 +9,14 @@ public class PlayerManager : CharacterManager
 
     [Header("DEBUG MENU")]
     [SerializeField] bool respawnCharacter = false;
+    [SerializeField] bool switchMeleeWeapon = false;
 
     [HideInInspector] public PlayerLocomotionManager playerLocomotionManager;
     [HideInInspector] public PlayerAnimatorManager playerAnimatorManager;
     [HideInInspector] public PlayerNetworkManager playerNetworkManager;
     [HideInInspector] public PlayerStatsManager playerStatsManager;
     [HideInInspector] public PlayerInventoryManager playerInventoryManager;
+    [HideInInspector] public PlayerEquipmentManager playerEquipmentManager;
 
     protected override void Awake()
     {
@@ -25,6 +27,7 @@ public class PlayerManager : CharacterManager
         playerLocomotionManager = GetComponent<PlayerLocomotionManager>();
         playerAnimatorManager = GetComponent<PlayerAnimatorManager>();
         playerInventoryManager = GetComponent<PlayerInventoryManager>();
+        playerEquipmentManager = GetComponent<PlayerEquipmentManager>();
     }
 
     protected override void Start()
@@ -84,6 +87,9 @@ public class PlayerManager : CharacterManager
         }
 
         playerNetworkManager.currentHealth.OnValueChanged += playerNetworkManager.CheckHP;
+
+        playerNetworkManager.currentMeleeWeaponID.OnValueChanged += playerNetworkManager.OnCurrentMeleeWeaponIDChange;
+        playerNetworkManager.currentRangedWeaponID.OnValueChanged += playerNetworkManager.OnCurrentRangedWeaponIDChange;
     }
 
     public override IEnumerator ProcessDeathEvent()
@@ -115,6 +121,12 @@ public class PlayerManager : CharacterManager
         {
             respawnCharacter = false;
             ReviveCharacter();
+        }
+
+        if (switchMeleeWeapon)
+        {
+            switchMeleeWeapon = false;
+            playerEquipmentManager.SwitchMeleeWeapon();
         }
     }
 }
