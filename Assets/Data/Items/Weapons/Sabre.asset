@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 091dd3f2849ed004998e0109e8b2ea47, type: 3}
   m_Name: Sabre
   m_EditorClassIdentifier: 
-  itemName: 
-  itemIcon: {fileID: 0}
+  itemName: Sabre
+  itemIcon: {fileID: 21300000, guid: dca480ac525ea5248b90ca4551b7eb03, type: 3}
   itemDescription: 
-  itemID: 0
+  itemID: 1
   weaponModel: {fileID: 9184432187975424422, guid: 7073fda23e58a0246ab4051627149026,
     type: 3}
   physicalDamage: 0

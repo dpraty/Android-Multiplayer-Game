@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 091dd3f2849ed004998e0109e8b2ea47, type: 3}
   m_Name: Axe
   m_EditorClassIdentifier: 
-  itemName: 
-  itemIcon: {fileID: 0}
+  itemName: Axe
+  itemIcon: {fileID: 21300000, guid: 17a674d3fd94d764b8c4ae68323c0791, type: 3}
   itemDescription: 
-  itemID: 0
+  itemID: 2
   weaponModel: {fileID: 383350824551587006, guid: 6e4a7b94d9513b041b9662aa2ff41d21,
     type: 3}
   physicalDamage: 0

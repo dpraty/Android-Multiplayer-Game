@@ -18,10 +18,12 @@ public class PlayerInputManager : MonoBehaviour
     public float horizontalInput;
     public float moveAmount;
     [SerializeField] bool dodgeInput = false;
+    [SerializeField] bool switchMeleeWeaponInput = false;
 
     [Header("Touchscreen Controls")]
     public TouchJoystick movementJoystick;
     public TouchButton dodgeButton;
+    public TouchSquareButton switchMeleeWeaponButton;
 
     // Finger variable to track joystick input
     private Finger movementFinger;
@@ -99,6 +101,7 @@ public class PlayerInputManager : MonoBehaviour
     {
         HandleMovementInput();
         HandleDodgeInput();
+        HandleSwitchMeleeWeaponInput();
     }
 
     // handles movement Input
@@ -129,6 +132,16 @@ public class PlayerInputManager : MonoBehaviour
         }
     }
 
+    private void HandleSwitchMeleeWeaponInput()
+    {
+        if (switchMeleeWeaponInput)
+        {
+            switchMeleeWeaponInput = false;
+
+            player.playerEquipmentManager.SwitchMeleeWeapon();
+        }
+    }
+
     // Handle Touch Inputs
     private void HandleFingerDown(Finger touchedFinger)
     {
@@ -147,6 +160,17 @@ public class PlayerInputManager : MonoBehaviour
         {
             dodgeInput = true;
             dodgeButton.PressButton();
+        }
+
+        if (touchedFinger.screenPosition.x >= switchMeleeWeaponButton.cornerPoint_1.x && touchedFinger.screenPosition.x <= switchMeleeWeaponButton.cornerPoint_2.x)
+        {
+            if (touchedFinger.screenPosition.y >= switchMeleeWeaponButton.cornerPoint_1.y && touchedFinger.screenPosition.y <= switchMeleeWeaponButton.cornerPoint_2.y)
+
+                if (!switchMeleeWeaponButton.buttonPressed)
+                {
+                    switchMeleeWeaponInput = true;
+                    switchMeleeWeaponButton.PressButton();
+                }
         }
     }
 

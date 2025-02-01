@@ -9,7 +9,7 @@ public class PlayerManager : CharacterManager
 
     [Header("DEBUG MENU")]
     [SerializeField] bool respawnCharacter = false;
-    [SerializeField] bool switchMeleeWeapon = false;
+    //[SerializeField] bool switchMeleeWeapon = false;
 
     [HideInInspector] public PlayerLocomotionManager playerLocomotionManager;
     [HideInInspector] public PlayerAnimatorManager playerAnimatorManager;
@@ -121,12 +121,6 @@ public class PlayerManager : CharacterManager
         {
             respawnCharacter = false;
             ReviveCharacter();
-        }
-
-        if (switchMeleeWeapon)
-        {
-            switchMeleeWeapon = false;
-            playerEquipmentManager.SwitchMeleeWeapon();
         }
     }
 }

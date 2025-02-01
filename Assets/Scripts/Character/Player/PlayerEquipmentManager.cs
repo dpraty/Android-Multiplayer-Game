@@ -67,6 +67,7 @@ public class PlayerEquipmentManager : CharacterEquipmentManager
             meleeWeaponManager = meleeWeaponModel.GetComponent<MeleeWeaponManager>();
             meleeWeaponManager.SetWeaponDamage(player, player.playerInventoryManager.currentMeleeWeapon);
 
+            PlayerUIManager.instance.playerUIHudManager.SwitchWeaponLogo(player.playerInventoryManager.currentMeleeWeapon.itemIcon);
         }
     }
 
