@@ -15,6 +15,7 @@ public class CharacterManager : NetworkBehaviour
     [HideInInspector] public CharacterController characterController;
     [HideInInspector] public Animator animator;
     [HideInInspector] public CharacterAnimatorManager characterAnimatorManager;
+    [HideInInspector] public CharacterCombatManager characterCombatManager;
 
     [Header("Flags")]
     public bool isPerformingAction = false;
@@ -30,6 +31,7 @@ public class CharacterManager : NetworkBehaviour
         characterController = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
         characterAnimatorManager = GetComponent<CharacterAnimatorManager>();
+        characterCombatManager = GetComponent<CharacterCombatManager>();
     }
 
     protected virtual void Start()

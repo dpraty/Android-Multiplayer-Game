@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MeleeWeaponManager : WeaponManager
 {
-    [SerializeField] MeleeWeaponDamageCollider meleeDamageCollider;
+    public MeleeWeaponDamageCollider meleeDamageCollider;
 
     protected override void Awake()
     {
@@ -17,5 +17,6 @@ public class MeleeWeaponManager : WeaponManager
     {
         meleeDamageCollider.characterCausingDamage = characterWieldingWeapon;
         meleeDamageCollider.physicalDamage = weapon.physicalDamage;
+        meleeDamageCollider.light_Attack_01_Modifier = weapon.light_Attack_01_Modifier;
     }
 }

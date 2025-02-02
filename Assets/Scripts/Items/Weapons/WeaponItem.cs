@@ -14,6 +14,13 @@ public class WeaponItem : Item
     [Header("Weapon Poise Damage")]
     public float poiseDamage = 10;
 
+    [Header("Attack Types Damage Multiplier")]
+    public float light_Attack_01_Modifier = 1.1f;
+
     [Header("Stamina Costs")]
     public int baseStaminaCost = 20;
+    public float lightAttackStaminaCostMultiplier = 0.9f;
+
+    [Header("Actions")]
+    public WeaponItemAction lightAttack;
 }

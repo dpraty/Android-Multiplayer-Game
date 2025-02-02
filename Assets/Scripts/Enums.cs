@@ -12,3 +12,8 @@ public enum WeaponModelSlot
     MeleeWeapon,
     RangedWeapon,
 }
+
+public enum AttackType
+{
+    LightAttack01,
+}

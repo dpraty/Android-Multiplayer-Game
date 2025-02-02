@@ -67,7 +67,8 @@ public class PlayerEquipmentManager : CharacterEquipmentManager
             meleeWeaponManager = meleeWeaponModel.GetComponent<MeleeWeaponManager>();
             meleeWeaponManager.SetWeaponDamage(player, player.playerInventoryManager.currentMeleeWeapon);
 
-            PlayerUIManager.instance.playerUIHudManager.SwitchWeaponLogo(player.playerInventoryManager.currentMeleeWeapon.itemIcon);
+            if (player.IsOwner)
+                PlayerUIManager.instance.playerUIHudManager.SwitchWeaponLogo(player.playerInventoryManager.currentMeleeWeapon.itemIcon);
         }
     }
 
@@ -126,5 +127,18 @@ public class PlayerEquipmentManager : CharacterEquipmentManager
 
         selectedWeapon = player.playerInventoryManager.rangedWeaponsInSlots[player.playerInventoryManager.rangedWeaponIndex];
         player.playerNetworkManager.currentRangedWeaponID.Value = selectedWeapon.itemID;
+    }
+
+    // Damage Colliders
+
+
+    public void OpenDamageCollider()
+    {
+        meleeWeaponManager.meleeDamageCollider.EnableDamageCollider();
+    }
+
+    public void CloseDamageCollider()
+    {
+        meleeWeaponManager.meleeDamageCollider.DisableDamageCollider();
     }
 }

@@ -17,12 +17,14 @@ public class PlayerInputManager : MonoBehaviour
     public float verticalInput;
     public float horizontalInput;
     public float moveAmount;
+    [SerializeField] bool lightAttackInput = false;
     [SerializeField] bool dodgeInput = false;
     [SerializeField] bool switchMeleeWeaponInput = false;
 
     [Header("Touchscreen Controls")]
     public TouchJoystick movementJoystick;
-    public TouchButton dodgeButton;
+    public TouchButton lightAttackButton;
+    public TouchSquareButton dodgeButton;
     public TouchSquareButton switchMeleeWeaponButton;
 
     // Finger variable to track joystick input
@@ -101,6 +103,7 @@ public class PlayerInputManager : MonoBehaviour
     {
         HandleMovementInput();
         HandleDodgeInput();
+        HangleLightAttackInput();
         HandleSwitchMeleeWeaponInput();
     }
 
@@ -142,6 +145,17 @@ public class PlayerInputManager : MonoBehaviour
         }
     }
 
+    private void HangleLightAttackInput()
+    {
+        if (lightAttackInput)
+        {
+            lightAttackInput = false;
+
+            player.playerCombatManager.PerformWeaponBasedAction(player.playerInventoryManager.currentMeleeWeapon.lightAttack, player.playerInventoryManager.currentMeleeWeapon);
+        }
+            
+    }
+
     // Handle Touch Inputs
     private void HandleFingerDown(Finger touchedFinger)
     {
@@ -153,24 +167,39 @@ public class PlayerInputManager : MonoBehaviour
 
             movementJoystick.knob.anchoredPosition = touchedFinger.screenPosition - movementJoystick.joystickCenterScreenPosition;
             movementInput = movementJoystick.knob.anchoredPosition/movementJoystick.joystickScreenRadius;
+
+            return;
         }
 
         // Presses the button based on the position of the touched finger
-        if (Vector2.Distance(touchedFinger.screenPosition, dodgeButton.buttonScreenPosition) <= dodgeButton.buttonRadius && !dodgeButton.buttonPressed)
+        if (Vector2.Distance(touchedFinger.screenPosition, lightAttackButton.buttonScreenPosition) <= lightAttackButton.buttonRadius && !lightAttackButton.buttonPressed)
         {
-            dodgeInput = true;
-            dodgeButton.PressButton();
+            lightAttackInput = true;
+            lightAttackButton.PressButton();
+
+            return;
         }
 
-        if (touchedFinger.screenPosition.x >= switchMeleeWeaponButton.cornerPoint_1.x && touchedFinger.screenPosition.x <= switchMeleeWeaponButton.cornerPoint_2.x)
+        if (touchedFinger.screenPosition.x >= dodgeButton.cornerPoint_1.x && touchedFinger.screenPosition.x <= dodgeButton.cornerPoint_2.x && touchedFinger.screenPosition.y >= dodgeButton.cornerPoint_1.y && touchedFinger.screenPosition.y <= dodgeButton.cornerPoint_2.y)
         {
-            if (touchedFinger.screenPosition.y >= switchMeleeWeaponButton.cornerPoint_1.y && touchedFinger.screenPosition.y <= switchMeleeWeaponButton.cornerPoint_2.y)
+            if (!dodgeButton.buttonPressed)
+            {
+                dodgeInput = true;
+                dodgeButton.PressButton();
+            }
 
-                if (!switchMeleeWeaponButton.buttonPressed)
-                {
-                    switchMeleeWeaponInput = true;
-                    switchMeleeWeaponButton.PressButton();
-                }
+            return;
+        }
+
+        if (touchedFinger.screenPosition.x >= switchMeleeWeaponButton.cornerPoint_1.x && touchedFinger.screenPosition.x <= switchMeleeWeaponButton.cornerPoint_2.x && touchedFinger.screenPosition.y >= switchMeleeWeaponButton.cornerPoint_1.y && touchedFinger.screenPosition.y <= switchMeleeWeaponButton.cornerPoint_2.y)
+        {
+            if (!switchMeleeWeaponButton.buttonPressed)
+            {
+                switchMeleeWeaponInput = true;
+                switchMeleeWeaponButton.PressButton();
+            }
+
+            return;
         }
     }
 

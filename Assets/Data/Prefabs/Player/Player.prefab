@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 5741118097415147400}
   - component: {fileID: 5260572117432802485}
   - component: {fileID: 8784250161020084279}
+  - component: {fileID: 6064068063684844397}
   - component: {fileID: 4824724063172652454}
   - component: {fileID: 5938519461098523934}
   - component: {fileID: 7855088902698950164}
@@ -116,6 +117,7 @@ MonoBehaviour:
   playerStatsManager: {fileID: 0}
   playerInventoryManager: {fileID: 0}
   playerEquipmentManager: {fileID: 0}
+  playerCombatManager: {fileID: 0}
 --- !u!114 &5286880877628812544
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -246,6 +248,19 @@ MonoBehaviour:
   moveSpeed: 4.4
   rotationSpeed: 1.2
   dodgeStaminaCost: 20
+--- !u!114 &6064068063684844397
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 129741955043868836}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27cd20c015fe2674188a0e5cea16dd6f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentWeaponBeingUsed: {fileID: 0}
 --- !u!143 &4824724063172652454
 CharacterController:
   m_ObjectHideFlags: 0

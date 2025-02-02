@@ -52,6 +52,8 @@ public class CharacterNetworkManager : NetworkBehaviour
         }
     }
 
+
+    // Action Animation Server RPC
     [ServerRpc]
     public void NotifyTheServerOfActionAnimationServerRpc(ulong clientID, string animationID, bool applyRootMotion)
     {
@@ -74,5 +76,86 @@ public class CharacterNetworkManager : NetworkBehaviour
     {
         character.animator.applyRootMotion = applyRootMotion;
         character.animator.CrossFade(animationID, 0.2f);
+    }
+
+    // Attack Action Animation Server RPC
+    [ServerRpc]
+    public void NotifyTheServerOfAttackActionAnimationServerRpc(ulong clientID, string animationID, bool applyRootMotion)
+    {
+        if (IsServer)
+        {
+            PlayAttackActionAnimationForAllClientsClientRpc(clientID, animationID, applyRootMotion);
+        }
+    }
+
+    [ClientRpc]
+    public void PlayAttackActionAnimationForAllClientsClientRpc(ulong clientID, string animationID, bool applyRootMotion)
+    {
+        if (clientID != NetworkManager.Singleton.LocalClientId)
+        {
+            PerformAttackActionAnimationFromServer(animationID, applyRootMotion);
+        }
+    }
+
+    private void PerformAttackActionAnimationFromServer(string animationID, bool applyRootMotion)
+    {
+        character.animator.applyRootMotion = applyRootMotion;
+        character.animator.CrossFade(animationID, 0.2f);
+    }
+
+    // Damage 
+    [ServerRpc(RequireOwnership = false)]
+    public void NotifyTheServerOfCharacterDamageServerRpc(
+        ulong damagedCharacterID,
+        ulong characterCausingDamageID,
+        float physicalDamage,
+        float poiseDamage,
+        float angleHitFrom,
+        float contactPointX,
+        float contactPointY,
+        float contactPointZ)
+    {
+        if (IsServer)
+        {
+            NotifyTheServerOfCharacterDamageClientRpc(damagedCharacterID, characterCausingDamageID, physicalDamage, poiseDamage, angleHitFrom, contactPointX, contactPointY, contactPointZ);
+        }
+    }
+
+    [ClientRpc]
+    public void NotifyTheServerOfCharacterDamageClientRpc(
+        ulong damagedCharacterID,
+        ulong characterCausingDamageID,
+        float physicalDamage,
+        float poiseDamage,
+        float angleHitFrom,
+        float contactPointX,
+        float contactPointY,
+        float contactPointZ)
+    {
+        ProcessCharacterDamageFromServer(damagedCharacterID, characterCausingDamageID, physicalDamage, poiseDamage, angleHitFrom, contactPointX, contactPointY, contactPointZ);
+    }
+
+    public void ProcessCharacterDamageFromServer(
+        ulong damagedCharacterID,
+        ulong characterCausingDamageID,
+        float physicalDamage,
+        float poiseDamage,
+        float angleHitFrom,
+        float contactPointX,
+        float contactPointY,
+        float contactPointZ)
+    {
+        CharacterManager damagedCharacter = NetworkManager.Singleton.SpawnManager.SpawnedObjects[damagedCharacterID].gameObject.GetComponent<CharacterManager>();
+        CharacterManager characterCausingDamage = NetworkManager.Singleton.SpawnManager.SpawnedObjects[characterCausingDamageID].gameObject.GetComponent<CharacterManager>();
+
+        TakeDamageEffect damageEffect = Instantiate(WorldCharacterEffectsManager.instance.takeDamageEffect);
+
+        damageEffect.physicalDamage = physicalDamage;
+        damageEffect.poiseDamage = poiseDamage;
+        damageEffect.angleHitFrom = angleHitFrom;
+        damageEffect.contactPoint = new Vector3(contactPointX, contactPointY, contactPointZ);
+        damageEffect.characterCausingDamage = characterCausingDamage;
+
+        damagedCharacter.characterEffectsManager.ProcessInstantEffects(damageEffect);
     }
 }
