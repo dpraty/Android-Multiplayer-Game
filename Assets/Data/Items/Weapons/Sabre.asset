@@ -18,6 +18,9 @@ MonoBehaviour:
   itemID: 1
   weaponModel: {fileID: 9184432187975424422, guid: 7073fda23e58a0246ab4051627149026,
     type: 3}
-  physicalDamage: 0
+  physicalDamage: 45
   poiseDamage: 10
-  baseStaminaCost: 20
+  light_Attack_01_Modifier: 1.1
+  baseStaminaCost: 28
+  lightAttackStaminaCostMultiplier: 0.8
+  lightAttack: {fileID: 11400000, guid: 8897b348b82f28345abc99d3f9f92b06, type: 2}

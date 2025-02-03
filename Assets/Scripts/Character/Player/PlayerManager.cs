@@ -62,6 +62,8 @@ public class PlayerManager : CharacterManager
 
     public override void OnNetworkSpawn()
     {
+        Debug.Log("Player Spawned!");
+
         base.OnNetworkSpawn();
 
         // singleton logic for player transform is run after on network spawn

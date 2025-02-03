@@ -21,6 +21,6 @@ MonoBehaviour:
   physicalDamage: 50
   poiseDamage: 10
   light_Attack_01_Modifier: 1.1
-  baseStaminaCost: 20
+  baseStaminaCost: 30
   lightAttackStaminaCostMultiplier: 0.9
   lightAttack: {fileID: 11400000, guid: 8897b348b82f28345abc99d3f9f92b06, type: 2}
