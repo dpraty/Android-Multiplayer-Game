@@ -81,16 +81,24 @@ public class PlayerEquipmentManager : CharacterEquipmentManager
 
         WeaponItem selectedWeapon = null;
 
-        player.playerInventoryManager.meleeWeaponIndex += 1;
-
-        if (player.playerInventoryManager.meleeWeaponIndex <0 || player.playerInventoryManager.meleeWeaponIndex > 2)
+        for (int i = 0; i < 2; i++)
         {
-            player.playerInventoryManager.meleeWeaponIndex = 0;
+            player.playerInventoryManager.meleeWeaponIndex += 1;
+
+            if (player.playerInventoryManager.meleeWeaponIndex < 0 || player.playerInventoryManager.meleeWeaponIndex > 2)
+            {
+                player.playerInventoryManager.meleeWeaponIndex = 0;
+            }
+
+            selectedWeapon = player.playerInventoryManager.meleeWeaponsInSlots[player.playerInventoryManager.meleeWeaponIndex];
+
+            if (selectedWeapon != null)
+            {
+                player.playerNetworkManager.currentMeleeWeaponID.Value = selectedWeapon.itemID;
+                break;
+            }
+                
         }
-
-        selectedWeapon = player.playerInventoryManager.meleeWeaponsInSlots[player.playerInventoryManager.meleeWeaponIndex];
-        player.playerNetworkManager.currentMeleeWeaponID.Value = selectedWeapon.itemID;
-
     }
 
     // Left Weapon

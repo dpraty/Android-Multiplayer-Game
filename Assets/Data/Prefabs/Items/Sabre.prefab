@@ -24,14 +24,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 900300351688242654}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.6400277, y: -0.04047014, z: -0.748786, w: -0.16747038}
-  m_LocalPosition: {x: -0.059, y: 0.229, z: 0.03}
+  m_LocalRotation: {x: -0.45724553, y: -0.0010864284, z: -0.8893399, w: -0.00009991225}
+  m_LocalPosition: {x: -0.0064, y: 0.0332, z: -0.0177}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4623351311099381957}
   m_Father: {fileID: 8251285278530441561}
-  m_LocalEulerAnglesHint: {x: -15.961, y: -79.364, z: -191.945}
+  m_LocalEulerAnglesHint: {x: -0.105, y: 54.419, z: -180.067}
 --- !u!1 &3122294998765484531
 GameObject:
   m_ObjectHideFlags: 0
@@ -60,7 +60,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 100, y: 100, z: 100}
+  m_LocalScale: {x: 38, y: 38, z: 38}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1428148887995599183}
@@ -161,8 +161,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df2221b6038ffae46a7757918e7e5617, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  damageCollider: {fileID: 0}
   physicalDamage: 20
+  contactPoint: {x: 0, y: 0, z: 0}
   characterCausingDamage: {fileID: 0}
+  light_Attack_01_Modifier: 0
 --- !u!65 &1126044978400141819
 BoxCollider:
   m_ObjectHideFlags: 0
