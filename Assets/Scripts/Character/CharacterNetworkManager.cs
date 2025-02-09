@@ -20,6 +20,12 @@ public class CharacterNetworkManager : NetworkBehaviour
     public NetworkVariable<float> animatorVerticalValue = new NetworkVariable<float>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     public NetworkVariable<float> animatorMoveAmountValue = new NetworkVariable<float>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
+    [Header("Target")]
+    public NetworkVariable<ulong> currentTargetNetworkObjectID = new NetworkVariable<ulong>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+
+    [Header("Flags")]
+    public NetworkVariable<bool> isLockedOn = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    
     [Header("Stats")]
     public NetworkVariable<float> currentStamina = new NetworkVariable<float>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     public NetworkVariable<int> maxStamina = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
@@ -37,8 +43,10 @@ public class CharacterNetworkManager : NetworkBehaviour
 
     public void CheckHP(int oldValue, int newValue)
     {
+        Debug.Log("Old Value - " + oldValue + " , New Value - " + newValue);
         if (currentHealth.Value <= 0)
         {
+            currentHealth.Value = 0;
             StartCoroutine(character.ProcessDeathEvent());
         }
 
@@ -52,6 +60,21 @@ public class CharacterNetworkManager : NetworkBehaviour
         }
     }
 
+    public void OnLockOnTargetIDChange(ulong oldID, ulong newID)
+    {
+        if (!IsOwner)
+        {
+            character.characterCombatManager.currentTarget = NetworkManager.Singleton.SpawnManager.SpawnedObjects[newID].gameObject.GetComponent<CharacterManager>();
+        }
+    }
+
+    public void OnIsLockedOnChange(bool old, bool isLockedOn)
+    {
+        if (!isLockedOn)
+        {
+            character.characterCombatManager.currentTarget = null;
+        }
+    }
 
     // Action Animation Server RPC
     [ServerRpc]

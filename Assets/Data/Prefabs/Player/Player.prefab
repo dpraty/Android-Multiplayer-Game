@@ -1471,6 +1471,37 @@ CapsuleCollider:
   m_Height: 0.1
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &4719455296258207648
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5648049410329963383}
+  m_Layer: 7
+  m_Name: Lock On Target
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5648049410329963383
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4719455296258207648}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.008, y: 0.112, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8661638410581624683}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4867455407690740654
 GameObject:
   m_ObjectHideFlags: 0
@@ -1877,6 +1908,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7099855159451840514}
+  - {fileID: 5648049410329963383}
   m_Father: {fileID: 7168003341950277046}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!136 &8225458023140742311
@@ -2227,7 +2259,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2140068392
+  GlobalObjectIdHash: 1800315610
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -2291,6 +2323,8 @@ MonoBehaviour:
   animatorVerticalValue:
     m_InternalValue: 0
   animatorMoveAmountValue:
+    m_InternalValue: 0
+  isLockedOn:
     m_InternalValue: 0
   currentStamina:
     m_InternalValue: 0
@@ -2409,7 +2443,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27cd20c015fe2674188a0e5cea16dd6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentTarget: {fileID: 0}
   currentAttackType: 0
+  lockOnTransform: {fileID: 5648049410329963383}
   currentWeaponBeingUsed: {fileID: 0}
 --- !u!143 &-2095809185945036671
 CharacterController:
@@ -2449,6 +2485,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2225c190caf521449b61cc7e155e31d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hit_Forward: hit_Forward
+  hit_Backward: hit_Backward
 --- !u!54 &-1277558881793294318
 Rigidbody:
   m_ObjectHideFlags: 0

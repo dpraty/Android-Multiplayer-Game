@@ -20,12 +20,21 @@ public class PlayerInputManager : MonoBehaviour
     [SerializeField] bool lightAttackInput = false;
     [SerializeField] bool dodgeInput = false;
     [SerializeField] bool switchMeleeWeaponInput = false;
+    [SerializeField] bool lockOnInput = false;
 
     [Header("Touchscreen Controls")]
     public TouchJoystick movementJoystick;
     public TouchButton lightAttackButton;
     public TouchSquareButton dodgeButton;
     public TouchSquareButton switchMeleeWeaponButton;
+    public TouchSquareButton lockOnButton;
+
+    [Header("Lock On")]
+    [SerializeField] private float lockOnRadius = 20;
+    [SerializeField] private float minimumViewableAngle = -70;
+    [SerializeField] private float maximumViewableAngle = 70;
+    private List<CharacterManager> availableTargets = new List<CharacterManager>();
+    private CharacterManager nearestLockOnTarget;
 
     // Finger variable to track joystick input
     private Finger movementFinger;
@@ -101,6 +110,7 @@ public class PlayerInputManager : MonoBehaviour
 
     private void HandleAllInput()
     {
+        HandleLockOnInput();
         HandleMovementInput();
         HandleDodgeInput();
         HangleLightAttackInput();
@@ -156,6 +166,113 @@ public class PlayerInputManager : MonoBehaviour
             
     }
 
+    private void HandleLockOnInput()
+    {
+        if (player.playerNetworkManager.isLockedOn.Value)
+        {
+            if (player.playerCombatManager.currentTarget == null)
+                return;
+
+            if (player.playerCombatManager.currentTarget.isDead.Value)
+            {
+                player.playerNetworkManager.isLockedOn.Value = false;
+            }
+        }
+
+        if (lockOnInput && player.playerNetworkManager.isLockedOn.Value)
+        {
+            lockOnInput = false;
+
+            ClearLockOnTargets();
+            player.playerNetworkManager.isLockedOn.Value = false;
+            return;
+        }
+
+        if (lockOnInput && !player.playerNetworkManager.isLockedOn.Value)
+        {
+            lockOnInput = false;
+
+            HandleLocatingLockOnTargets();
+            
+            if (nearestLockOnTarget != null)
+            {
+                player.playerCombatManager.SetTarget(nearestLockOnTarget);
+                player.playerNetworkManager.isLockedOn.Value = true;
+            }
+
+            return;
+        }
+    }
+
+    private void HandleLocatingLockOnTargets()
+    {
+        float shortestDistance = Mathf.Infinity;
+        //float shortestDistanceOfLeftTarget = -Mathf.Infinity;
+        //float shortestDistanceOfRightTarget = Mathf.Infinity;
+
+        Collider[] colliders = Physics.OverlapSphere(player.transform.position, lockOnRadius, WorldUtilityManager.Instance.GetCharacterLayers());
+
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            CharacterManager lockOnTarget = colliders[i].GetComponent<CharacterManager>();
+
+            if (lockOnTarget != null)
+            {
+                Vector3 lockOnTargetsDirection = lockOnTarget.transform.position - player.transform.position;
+                float distanceFromTarget = Vector3.Distance(player.transform.position, lockOnTarget.transform.position);
+                float targetAngle = Vector3.Angle(lockOnTargetsDirection, player.transform.forward);
+
+                if (lockOnTarget.isDead.Value)
+                    continue;
+
+                if (lockOnTarget.transform.root == player.transform.root)
+                    continue;
+
+                if (targetAngle >= minimumViewableAngle && targetAngle <= maximumViewableAngle)
+                {
+                    RaycastHit hit;
+
+                    if (Physics.Linecast(player.playerCombatManager.lockOnTransform.position, 
+                        lockOnTarget.characterCombatManager.lockOnTransform.position, 
+                        out hit, WorldUtilityManager.Instance.GetEnviroLayers()))
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        availableTargets.Add(lockOnTarget);
+                    }
+                }
+            }
+        }
+
+        for (int k = 0; k < availableTargets.Count; k++)
+        {
+            if (availableTargets[k] != null)
+            {
+                float distanceFromTarget = Vector3.Distance(player.transform.position, availableTargets[k].transform.position);
+                Vector3 lockOnTargetsDirection = availableTargets[k].transform.position - player.transform.position;
+
+                if (distanceFromTarget < shortestDistance)
+                {
+                    shortestDistance = distanceFromTarget;
+                    nearestLockOnTarget = availableTargets[k];
+                }
+            }
+            else
+            {
+                ClearLockOnTargets();
+                player.playerNetworkManager.isLockedOn.Value = false;
+            }
+        }
+    }
+
+    public void ClearLockOnTargets()
+    {
+        nearestLockOnTarget = null;
+        availableTargets.Clear();
+    }
+
     // Handle Touch Inputs
     private void HandleFingerDown(Finger touchedFinger)
     {
@@ -197,6 +314,17 @@ public class PlayerInputManager : MonoBehaviour
             {
                 switchMeleeWeaponInput = true;
                 switchMeleeWeaponButton.PressButton();
+            }
+
+            return;
+        }
+
+        if (touchedFinger.screenPosition.x >= lockOnButton.cornerPoint_1.x && touchedFinger.screenPosition.x <= lockOnButton.cornerPoint_2.x && touchedFinger.screenPosition.y >= lockOnButton.cornerPoint_1.y && touchedFinger.screenPosition.y <= lockOnButton.cornerPoint_2.y)
+        {
+            if (!lockOnButton.buttonPressed)
+            {
+                lockOnInput = true;
+                lockOnButton.PressButton();
             }
 
             return;

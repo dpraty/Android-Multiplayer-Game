@@ -16,4 +16,9 @@ public class CharacterEffectsManager : MonoBehaviour
     {
         effect.ProcessEffect(character);
     }
+
+    public void PlayBloodSplatterVFX(Vector3 contactPoint)
+    {
+        GameObject bloadSplatter = Instantiate(WorldCharacterEffectsManager.instance.bloodSplatterVFX, contactPoint, Quaternion.identity);
+    }
 }

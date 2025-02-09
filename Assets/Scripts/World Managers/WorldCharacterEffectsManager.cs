@@ -15,6 +15,9 @@ public class WorldCharacterEffectsManager : MonoBehaviour
     // we can add timed effects and static effects here
     [SerializeField] List<InstantCharacterEffect> instantEffects;
 
+    [Header("VFX")]
+    public GameObject bloodSplatterVFX;
+
     private void Awake()
     {
         if (instance == null)

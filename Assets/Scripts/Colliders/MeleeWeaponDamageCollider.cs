@@ -46,6 +46,7 @@ public class MeleeWeaponDamageCollider : DamageCollider
         TakeDamageEffect damageEffect = Instantiate(WorldCharacterEffectsManager.instance.takeDamageEffect);
         damageEffect.physicalDamage = physicalDamage;
         damageEffect.contactPoint = contactPoint;
+        damageEffect.angleHitFrom = Vector3.SignedAngle(characterCausingDamage.transform.forward, damageTarget.transform.forward, Vector3.up);
 
         switch (characterCausingDamage.characterCombatManager.currentAttackType)
         {

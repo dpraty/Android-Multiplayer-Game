@@ -20,7 +20,6 @@ public class PlayerUIPopUpManager : MonoBehaviour
         {
             canvas.alpha = 1;
 
-            Debug.Log("Timer : " + duration + " Delay : " + delay);
             while (delay > 0)
             {
                 delay = delay - Time.deltaTime;
@@ -29,7 +28,6 @@ public class PlayerUIPopUpManager : MonoBehaviour
 
             float timer = 0;
 
-            Debug.Log("Timer : " + timer + " Delay : " + delay);
 
             yield return null;
 
@@ -41,7 +39,6 @@ public class PlayerUIPopUpManager : MonoBehaviour
                 yield return null;
             }
 
-            Debug.Log("Timer : " + timer + " Delay : " + delay);
         }
 
         canvas.alpha = 0;

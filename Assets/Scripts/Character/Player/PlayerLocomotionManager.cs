@@ -18,6 +18,7 @@ public class PlayerLocomotionManager : CharacterLocomotionManager
     private Vector3 rotationDirection;
     [SerializeField] float moveSpeed = 4.4f;
     [SerializeField] float rotationSpeed = 1000f;
+    [SerializeField] float lockOnTargetFollowSpeed = 1000f;
 
     [Header("Dodge")]
     private Vector3 rollDirection;
@@ -87,18 +88,30 @@ public class PlayerLocomotionManager : CharacterLocomotionManager
 
     private void HandleRotation()
     {
-        if (!player.canRotate)
-            return;
+        //if (!player.canRotate)
+        //    return;
 
-        // unlocked rotation logic - this will be different when we lock on to an enemy
-        rotationDirection = moveDirection;
-
-        if (rotationDirection == Vector3.zero)
+        if (player.playerNetworkManager.isLockedOn.Value)
         {
-            rotationDirection = player.transform.forward;
-        }
+            rotationDirection = player.playerCombatManager.currentTarget.characterCombatManager.lockOnTransform.position - player.transform.position;
+            rotationDirection.Normalize();
+            rotationDirection.y = 0;
 
-        player.transform.LookAt(player.transform.position + rotationSpeed * Time.deltaTime * rotationDirection, Vector3.up);
+            player.transform.LookAt(player.transform.position + lockOnTargetFollowSpeed * Time.deltaTime * rotationDirection, Vector3.up);
+
+        }
+        // unlocked rotation logic - this will be different when we lock on to an enemy
+        else
+        {
+            rotationDirection = moveDirection;
+
+            if (rotationDirection == Vector3.zero)
+            {
+                rotationDirection = player.transform.forward;
+            }
+
+            player.transform.LookAt(player.transform.position + rotationSpeed * Time.deltaTime * rotationDirection, Vector3.up);
+        }
     }
 
     public void AttemptToPerformDodge()

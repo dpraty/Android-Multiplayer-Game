@@ -12,6 +12,10 @@ public class CharacterAnimatorManager : MonoBehaviour
     float vertical;
     float horizontal;
 
+    [Header("Damage Animations")]
+    public string hit_Forward;
+    public string hit_Backward;
+
     protected virtual void Awake()
     {
         character = GetComponent<CharacterManager>();

@@ -92,6 +92,9 @@ public class PlayerManager : CharacterManager
 
         playerNetworkManager.currentHealth.OnValueChanged += playerNetworkManager.CheckHP;
 
+        playerNetworkManager.isLockedOn.OnValueChanged += playerNetworkManager.OnIsLockedOnChange;
+        playerNetworkManager.currentTargetNetworkObjectID.OnValueChanged += playerNetworkManager.OnLockOnTargetIDChange;
+
         playerNetworkManager.currentMeleeWeaponID.OnValueChanged += playerNetworkManager.OnCurrentMeleeWeaponIDChange;
         playerNetworkManager.currentRangedWeaponID.OnValueChanged += playerNetworkManager.OnCurrentRangedWeaponIDChange;
     }
@@ -112,6 +115,7 @@ public class PlayerManager : CharacterManager
 
         if (IsOwner)
         {
+            isDead.Value = false;
             playerNetworkManager.currentHealth.Value = playerNetworkManager.maxHealth.Value;
             playerNetworkManager.currentStamina.Value = playerNetworkManager.maxStamina.Value;
 

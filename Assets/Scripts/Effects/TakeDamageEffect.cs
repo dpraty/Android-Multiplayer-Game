@@ -30,11 +30,14 @@ public class TakeDamageEffect : InstantCharacterEffect
     public override void ProcessEffect(CharacterManager character)
     {
         base.ProcessEffect(character);
-
+        
         if (character.isDead.Value)
             return;
 
         CalculateDamage(character);
+        PlayDirectionalBasedDamageAnimation(character);
+
+        PlayDamageVFX(character);
 
     }
 
@@ -56,5 +59,35 @@ public class TakeDamageEffect : InstantCharacterEffect
         }
 
         character.characterNetworkManager.currentHealth.Value -= finalDamageDealt;
+    }
+
+    private void PlayDamageVFX(CharacterManager character)
+    {
+        character.characterEffectsManager.PlayBloodSplatterVFX(contactPoint);
+    }
+
+    private void PlayDirectionalBasedDamageAnimation(CharacterManager character)
+    {
+        if (!character.IsOwner)
+            return;
+
+        if (character.isDead.Value)
+            return;
+
+        poiseIsBroken = true;
+
+        if (angleHitFrom >= 90 || angleHitFrom <= -90)
+        {
+            damageAnimation = character.characterAnimatorManager.hit_Forward;
+        }
+        else
+        {
+            damageAnimation = character.characterAnimatorManager.hit_Backward;
+        }
+
+        if (poiseIsBroken)
+        {
+            character.characterAnimatorManager.PlayTargetActionAnimation(damageAnimation, true);
+        }
     }
 }

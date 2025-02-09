@@ -71,11 +71,12 @@ public class CharacterManager : NetworkBehaviour
     {
         if (IsOwner)
         {
-            characterNetworkManager.currentHealth.Value = 0;
+            Debug.Log(NetworkObjectId);
+            
             isDead.Value = true;
 
             characterAnimatorManager.PlayTargetActionAnimation("Death", true);
-
+            Debug.Log("Played death anim!");
             yield return new WaitForSeconds(5);
         }
     }
