@@ -18,7 +18,6 @@ public class PlayerLocomotionManager : CharacterLocomotionManager
     private Vector3 rotationDirection;
     [SerializeField] float moveSpeed = 4.4f;
     [SerializeField] float rotationSpeed = 1000f;
-    [SerializeField] float lockOnTargetFollowSpeed = 1000f;
 
     [Header("Dodge")]
     private Vector3 rollDirection;
@@ -52,7 +51,26 @@ public class PlayerLocomotionManager : CharacterLocomotionManager
             moveAmount = player.characterNetworkManager.animatorMoveAmountValue.Value;
 
             // the update animator params for the client happens here??
-            player.playerAnimatorManager.UpdateAnimatorMovementParameters(0, moveAmount);
+            if (player.playerNetworkManager.isLockedOn.Value)
+            {
+                Vector3 targetDirection = player.playerCombatManager.currentTarget.transform.position - player.transform.position;
+
+                Vector2 direction = new Vector2(targetDirection.x, targetDirection.z);
+                direction.Normalize();
+                Vector2 movement = new Vector2(horizontalMovement, verticalMovement);
+                movement.Normalize();
+
+                float verticalValue = Vector3.Dot(movement, direction);
+                float crossZ = movement.x * direction.y - movement.y * targetDirection.x;
+                float horizontalMag = Mathf.Sqrt(Mathf.Abs(movement.sqrMagnitude - Mathf.Pow(verticalValue, 2)));
+                float horizontalValue = Mathf.Sign(crossZ) * horizontalMag;
+
+                player.playerAnimatorManager.UpdateAnimatorMovementParameters(horizontalValue, verticalValue);
+            }
+            else
+            {
+                player.playerAnimatorManager.UpdateAnimatorMovementParameters(0, moveAmount);
+            }
         }
     }
 
@@ -88,16 +106,16 @@ public class PlayerLocomotionManager : CharacterLocomotionManager
 
     private void HandleRotation()
     {
-        //if (!player.canRotate)
-        //    return;
+        if (!player.canRotate)
+            return;
 
         if (player.playerNetworkManager.isLockedOn.Value)
         {
-            rotationDirection = player.playerCombatManager.currentTarget.characterCombatManager.lockOnTransform.position - player.transform.position;
+            rotationDirection = player.playerCombatManager.currentTarget.transform.position - player.transform.position;
             rotationDirection.Normalize();
             rotationDirection.y = 0;
 
-            player.transform.LookAt(player.transform.position + lockOnTargetFollowSpeed * Time.deltaTime * rotationDirection, Vector3.up);
+            player.transform.LookAt(player.transform.position + rotationSpeed * Time.deltaTime * rotationDirection, Vector3.up);
 
         }
         // unlocked rotation logic - this will be different when we lock on to an enemy

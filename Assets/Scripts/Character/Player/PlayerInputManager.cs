@@ -132,7 +132,27 @@ public class PlayerInputManager : MonoBehaviour
         if (player == null)
             return;
 
-        player.playerAnimatorManager.UpdateAnimatorMovementParameters(0, moveAmount);
+        if (player.playerNetworkManager.isLockedOn.Value)
+        {
+            Vector3 targetDirection = player.playerCombatManager.currentTarget.transform.position - player.transform.position;
+            
+            Vector2 direction = new Vector2(targetDirection.x, targetDirection.z);
+            direction.Normalize();
+
+            Vector2 movement = movementInput.normalized;
+
+            float verticalValue = Vector3.Dot(movement, direction);
+            float crossZ = movement.x * direction.y - movement.y * targetDirection.x;
+            float horizontalMag = Mathf.Sqrt(Mathf.Abs(movement.sqrMagnitude - Mathf.Pow(verticalValue, 2)));
+            float horizontalValue = Mathf.Sign(crossZ) * horizontalMag;
+
+            player.playerAnimatorManager.UpdateAnimatorMovementParameters(horizontalValue, verticalValue);
+        }
+        else
+        {
+            player.playerAnimatorManager.UpdateAnimatorMovementParameters(0, moveAmount);
+        }
+        
     }
 
     private void HandleDodgeInput()
